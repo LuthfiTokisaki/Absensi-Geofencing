@@ -25,13 +25,20 @@ Route::middleware(['guest:karyawan'])->group(function () {
     Route::get('/', function () {
         return view('auth.login');
     })->name('login');
+    Route::post('/verify-geofence', 'App\Http\Controllers\AuthController@verifyGeofence');
+    Route::get('/2fa', 'AuthController@show2FA')->name('auth.2fa');
+    Route::get('/2fa', 'AuthController@show2FA')->name('auth.2faadmin');
+    Route::post('/2fa', 'Auth\AuthController@proses2fa')->name('proses2fa');
+    Route::post('/proses2fa', 'AuthController@proses2fa')->name('proses2fa');
+    Route::post('/proses2faadmin', 'AuthController@proses2faadmin')->name('proses2faadmin');
+    Route::post('proses2fa', 'YourController@proses2fa')->middleware('check2faenabled');
     Route::post('/proseslogin', [AuthController::class, 'proseslogin']);
 });
 
 // Posisi user login
 Route::middleware(['auth:karyawan'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index']);
-    Route::get('/proseslogout', [AuthController::class, 'proseslogout']);
+    Route::get('    ', [AuthController::class, 'proseslogout']);
 
     // Presensi Absen
     Route::get('/presensi/create', [PresensiController::class, 'create']);

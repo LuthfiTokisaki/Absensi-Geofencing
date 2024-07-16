@@ -45,46 +45,40 @@
                     </div>
                 @endif
 
-                <form action="/proseslogin" method="POST">
-                    @csrf
-                    <div class="form-group boxed">
-                        <div class="input-wrapper">
-                            <input type="text" class="form-control" id="nik" placeholder="NIK"
-                                name="nik" />
-                            <i class="clear-input">
-                                <ion-icon name="close-circle"></ion-icon>
-                            </i>
-                        </div>
-                    </div>
+                <form action="/proseslogin" method="POST" id="login-form">
+    @csrf
+    <div class="form-group boxed">
+        <div class="input-wrapper">
+            <input type="text" class="form-control" id="nik" placeholder="NIK" name="nik" />
+        </div>
+    </div>
 
-                    <div class="form-group boxed">
-                        <div class="input-wrapper">
-                            <input type="password" class="form-control" id="password" name="password"
-                                placeholder="Password" />
-                            <i class="clear-input">
-                                <ion-icon name="close-circle"></ion-icon>
-                            </i>
-                        </div>
-                    </div>
+    <div class="form-group boxed">
+        <div class="input-wrapper">
+            <input type="password" class="form-control" id="password" name="password" placeholder="Password" />
+        </div>
+    </div>
 
-                    <div class="form-links mt-2">
-                        {{-- <div>
-                            <a href="page-register.html">Register Now</a>
-                        </div> --}}
-                        <div>
-                            <a href="page-forgot-password.html" class="text-muted">Forgot Password?</a>
-                        </div>
-                    </div>
+    <input type="hidden" name="user_location" id="user_location">
 
-                    <div class="form-button-group">
-                        <button type="submit" class="btn btn-primary btn-block btn-lg">
-                            Log in
-                        </button>
-                    </div>
-                </form>
+    <div class="form-button-group">
+        <button type="submit" class="btn btn-primary btn-block btn-lg">
+            Log in
+        </button>
+    </div>
+</form>
             </div>
         </div>
     </div>
+
+    @if ($errors->any())
+    <div class="alert alert-danger">
+        @foreach ($errors->all() as $error)
+            <p>{{ $error }}</p>
+        @endforeach
+    </div>
+@endif
+
     <!-- * App Capsule -->
 
     <!-- ///////////// Js Files ////////////////////  -->
@@ -101,6 +95,58 @@
     <script src="{{ asset('assets/js/plugins/jquery-circle-progress/circle-progress.min.js') }}"></script>
     <!-- Base Js File -->
     <script src="{{ asset('assets/js/base.js') }}"></script>
+    <!-- Add Leaflet library and geolocation script -->
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Menampilkan peta menggunakan Leaflet
+        var map = L.map('map').setView([-6.902593, -252.201328], 30); // Ganti dengan koordinat pusat peta yang diinginkan
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Mendapatkan lokasi pengguna saat ini
+        navigator.geolocation.getCurrentPosition(function(position) {
+            var userLocation = position.coords.latitude + ',' + position.coords.longitude;
+            document.getElementById('user_location').value = userLocation;
+
+            // Menandai lokasi pengguna pada peta dengan marker
+            var marker = L.marker([position.coords.latitude, position.coords.longitude]).addTo(map);
+            marker.bindPopup("Lokasi Anda").openPopup();
+        });
+
+        // Submit form setelah verifikasi geofence
+        $('#login-form').on('submit', function(event) {
+            event.preventDefault();
+            
+            // Ambil lokasi pengguna dari input tersembunyi
+            var userLocation = $('#user_location').val();
+
+            // Kirim AJAX request untuk verifikasi geofence
+            $.ajax({
+                type: 'POST',
+                url: '/verify-geofence',
+                data: {
+                    location: userLocation
+                },
+                success: function(response) {
+                    if (response.allowed) {
+                        // Jika lokasi diizinkan, submit form login
+                        $('#login-form')[0].submit();
+                    } else {
+                        // Jika lokasi tidak diizinkan, tampilkan pesan kesalahan
+                        alert('Lokasi Anda tidak diizinkan untuk login. Silakan coba lagi dari lokasi yang sesuai.');
+                    }
+                },
+                error: function() {
+                    // Handle error jika terjadi masalah dengan AJAX request
+                    alert('Terjadi kesalahan saat verifikasi lokasi. Silakan coba lagi nanti.');
+                }
+            });
+        });
+    });
+</script>
 </body>
 
 </html>

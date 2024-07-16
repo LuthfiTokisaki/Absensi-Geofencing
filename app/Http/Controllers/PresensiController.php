@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Models\Karyawan;
 use App\Models\Pengajuan;
 use App\Models\Presensi;
-use Illuminate\Http\Request;
+use App\Models\Geofence; // Add this line to import the Geofence model
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -34,17 +35,17 @@ class PresensiController extends Controller
         $jam = date("H:i:s");
 
         // LOKASI KANTOR (TITIK RADIUS)
-        // $latitudeKantor = -6.916810104499334;
-        // $longitudeKantor = 107.79425030729652;
+         $latitudeKantor = -6.916810104499334;
+         $longitudeKantor = 107.79425030729652;
 
         // $latitudeKantor = -6.914289335466438;
         // $longitudeKantor = 107.61169550914718;
 
-        // $latitudeKantor = -6.9172307420433965;
-        // $longitudeKantor = 107.61005901027413;
+        //$latitudeKantor = -6.9172307420433965;
+        //$longitudeKantor = 107.61005901027413;
 
-        $latitudeKantor = -6.902568;
-        $longitudeKantor = 107.798609;
+        //$latitudeKantor = -6.902568;
+        //$longitudeKantor = 107.798609;
 
         // LOKASI USER
         $lokasi = $request->lokasi;

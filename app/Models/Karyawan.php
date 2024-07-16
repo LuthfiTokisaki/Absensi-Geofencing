@@ -23,6 +23,8 @@ class Karyawan extends Authenticatable
         'password',
         'foto',
         'kode_dept',
+        'google2fa_enabled',
+        'google2fa_secret',
     ];
 
     protected $hidden = [
