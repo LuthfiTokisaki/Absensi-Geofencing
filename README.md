@@ -71,3 +71,4 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
          Pass : 123456
 - Admin : Email    : test@example.com
           Password : 1234546
+Open web admin using "/panel" on bar
